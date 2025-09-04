@@ -1,1 +1,120 @@
-#
+#include <iostream>
+#include <string>
+using namespace std;
+
+class ResearchPaper
+{
+private:
+    string *authorNames;
+    int size;
+
+public:
+    ResearchPaper(int numAuthors) : size(numAuthors)
+    {
+        authorNames = new string[size];
+    }
+
+    ResearchPaper(const ResearchPaper &other) : size(other.size)
+    {
+        authorNames = new string[size];
+        for (int i = 0; i < size; ++i)
+        {
+            authorNames[i] = other.authorNames[i];
+        }
+    }
+
+    ResearchPaper &operator=(const ResearchPaper &other)
+    {
+        if (this != &other)
+        {
+            delete[] authorNames;
+
+            size = other.size;
+            authorNames = new string[size];
+            for (int i = 0; i < size; ++i)
+            {
+                authorNames[i] = other.authorNames[i];
+            }
+        }
+        return *this;
+    }
+
+    ~ResearchPaper()
+    {
+        delete[] authorNames;
+    }
+
+    void inputAuthors()
+    {
+        cout << "Enter " << size << " author names:" << endl;
+        cin.ignore();
+        for (int i = 0; i < size; ++i)
+        {
+            cout << "Author " << i + 1 << ": ";
+            getline(cin, authorNames[i]);
+        }
+    }
+
+    void display() const
+    {
+        cout << "Authors: ";
+        for (int i = 0; i < size; ++i)
+        {
+            cout << authorNames[i];
+            if (i < size - 1)
+                cout << ", ";
+        }
+        cout << endl;
+    }
+
+    void updateAuthor(int index, const string &newName)
+    {
+        if (index >= 0 && index < size)
+        {
+            authorNames[index] = newName;
+        }
+        else
+        {
+            cout << "Invalid index!" << endl;
+        }
+    }
+};
+
+int main()
+{
+    int numAuthors;
+    cout << "Enter the number of authors: ";
+    cin >> numAuthors;
+
+    ResearchPaper paper1(numAuthors);
+    paper1.inputAuthors();
+
+    ResearchPaper paper2 = paper1;
+
+    char choice;
+    cout << "Do you want to update an author in the second paper? (y/n): ";
+    cin >> choice;
+
+    if (choice == 'y' || choice == 'Y')
+    {
+        int index;
+        string newName;
+
+        cout << "Enter the index of author to update (0 to " << numAuthors - 1 << "): ";
+        cin >> index;
+        cin.ignore();
+
+        cout << "Enter the new name: ";
+        getline(cin, newName);
+
+        paper2.updateAuthor(index, newName);
+    }
+
+    cout << "\nOriginal Paper:" << endl;
+    paper1.display();
+
+    cout << "Copied Paper:" << endl;
+    paper2.display();
+
+    return 0;
+}
