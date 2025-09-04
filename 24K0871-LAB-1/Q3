@@ -1,0 +1,77 @@
+#include <iostream>
+using namespace std;
+
+class Exam
+{
+private:
+    int *marks;
+    int size;
+
+public:
+    Exam(int s, int initialMark) : size(s)
+    {
+        marks = new int[size];
+        for (int i = 0; i < size; ++i)
+        {
+            marks[i] = initialMark;
+        }
+    }
+
+    ~Exam()
+    {
+        delete[] marks;
+    }
+
+    void display() const
+    {
+        cout << "Marks: ";
+        for (int i = 0; i < size; ++i)
+        {
+            cout << marks[i] << " ";
+        }
+        cout << endl;
+    }
+
+    void setMark(int index, int value)
+    {
+        if (index >= 0 && index < size)
+            marks[index] = value;
+    }
+};
+
+int main()
+{
+    int size, initialMark;
+
+    cout << "Enter the number of subjects: ";
+    cin >> size;
+
+    cout << "Enter the initial mark for all subjects: ";
+    cin >> initialMark;
+
+    Exam exam1(size, initialMark);
+    Exam exam2 = exam1;
+
+    cout << "\nInitial marks:" << endl;
+    cout << "Exam1: ";
+    exam1.display();
+    cout << "Exam2: ";
+    exam2.display();
+
+    int index, newMark;
+    cout << "\nEnter the index of the mark to change (0 to " << size - 1 << "): ";
+    cin >> index;
+
+    cout << "Enter the new mark: ";
+    cin >> newMark;
+
+    exam2.setMark(index, newMark);
+
+    cout << "\nAfter changing mark in exam2:" << endl;
+    cout << "Exam1: ";
+    exam1.display();
+    cout << "Exam2: ";
+    exam2.display();
+
+    return 0;
+}
