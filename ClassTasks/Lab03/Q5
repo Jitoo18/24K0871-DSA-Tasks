@@ -1,0 +1,218 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Song
+{
+public:
+    string title;
+    string artist;
+    Song *next;
+
+    Song(string title, string artist) : title(title), artist(artist), next(nullptr) {}
+};
+
+class Playlist
+{
+private:
+    Song *current;
+    int size;
+
+public:
+    Playlist() : current(nullptr), size(0) {}
+
+    void addSong(string title, string artist)
+    {
+        Song *newSong = new Song(title, artist);
+        if (current == nullptr)
+        {
+            current = newSong;
+            newSong->next = newSong;
+        }
+        else
+        {
+            Song *temp = current;
+            while (temp->next != current)
+            {
+                temp = temp->next;
+            }
+            temp->next = newSong;
+            newSong->next = current;
+        }
+        size++;
+        cout << "Added: " << title << " by " << artist << endl;
+    }
+
+    void removeSong(string title)
+    {
+        if (current == nullptr)
+        {
+            cout << "Playlist is empty." << endl;
+            return;
+        }
+
+        Song *temp = current;
+        Song *prev = nullptr;
+
+        do
+        {
+            if (temp->title == title)
+            {
+                if (prev == nullptr)
+                {
+                    if (size == 1)
+                    {
+                        delete current;
+                        current = nullptr;
+                    }
+                    else
+                    {
+                        Song *last = current;
+                        while (last->next != current)
+                        {
+                            last = last->next;
+                        }
+                        last->next = current->next;
+                        Song *toDelete = current;
+                        current = current->next;
+                        delete toDelete;
+                    }
+                }
+                else
+                {
+                    prev->next = temp->next;
+                    if (temp == current)
+                    {
+                        current = temp->next;
+                    }
+                    delete temp;
+                }
+                size--;
+                cout << "Removed: " << title << endl;
+                return;
+            }
+            prev = temp;
+            temp = temp->next;
+        } while (temp != current);
+
+        cout << "Song not found: " << title << endl;
+    }
+
+    void playCurrent()
+    {
+        if (current == nullptr)
+        {
+            cout << "Playlist is empty." << endl;
+            return;
+        }
+        cout << "Now playing: " << current->title << " by " << current->artist << endl;
+    }
+
+    void nextSong()
+    {
+        if (current == nullptr)
+        {
+            cout << "Playlist is empty." << endl;
+            return;
+        }
+        current = current->next;
+        playCurrent();
+    }
+
+    void displayPlaylist()
+    {
+        if (current == nullptr)
+        {
+            cout << "Playlist is empty." << endl;
+            return;
+        }
+
+        cout << "Playlist (" << size << " songs):" << endl;
+        Song *temp = current;
+        int count = 1;
+        do
+        {
+            cout << count << ". " << temp->title << " - " << temp->artist;
+            if (temp == current)
+            {
+                cout << " [Currently Playing]";
+            }
+            cout << endl;
+            temp = temp->next;
+            count++;
+        } while (temp != current);
+    }
+
+    int getSize()
+    {
+        return size;
+    }
+
+    ~Playlist()
+    {
+        if (current == nullptr)
+            return;
+
+        Song *temp = current->next;
+        while (temp != current)
+        {
+            Song *toDelete = temp;
+            temp = temp->next;
+            delete toDelete;
+        }
+        delete current;
+    }
+};
+
+int main()
+{
+    Playlist myPlaylist;
+    int choice;
+    string title, artist;
+
+    cout << "Music Playlist Manager" << endl;
+
+    do
+    {
+        cout << "\nOptions:" << endl;
+        cout << "1. Add a song" << endl;
+        cout << "2. Remove a song" << endl;
+        cout << "3. Play current song" << endl;
+        cout << "4. Play next song" << endl;
+        cout << "5. Display playlist" << endl;
+        cout << "6. Exit" << endl;
+        cout << "Enter your choice: ";
+        cin >> choice;
+        cin.ignore();
+
+        switch (choice)
+        {
+        case 1:
+            cout << "Enter song title: ";
+            getline(cin, title);
+            cout << "Enter artist name: ";
+            getline(cin, artist);
+            myPlaylist.addSong(title, artist);
+            break;
+        case 2:
+            cout << "Enter song title to remove: ";
+            getline(cin, title);
+            myPlaylist.removeSong(title);
+            break;
+        case 3:
+            myPlaylist.playCurrent();
+            break;
+        case 4:
+            myPlaylist.nextSong();
+            break;
+        case 5:
+            myPlaylist.displayPlaylist();
+            cout << "Goodbye!" << endl;
+            break;
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+        }
+    } while (choice != 6);
+
+    return 0;
+}
