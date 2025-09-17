@@ -1,1 +1,149 @@
+#include <iostream>
+#include <string>
+using namespace std;
 
+struct Item
+{
+    string name;
+    double price;
+    Item *next;
+
+    Item(string n, double p) : name(n), price(p), next(nullptr) {}
+};
+
+class ShoppingCart
+{
+private:
+    Item *head;
+
+public:
+    ShoppingCart() : head(nullptr) {}
+
+    void addToFront(string name, double price)
+    {
+        Item *newItem = new Item(name, price);
+        newItem->next = head;
+        head = newItem;
+        cout << "Added to front: " << name << " - $" << price << endl;
+    }
+
+    void addToEnd(string name, double price)
+    {
+        Item *newItem = new Item(name, price);
+        if (head == nullptr)
+        {
+            head = newItem;
+        }
+        else
+        {
+            Item *temp = head;
+            while (temp->next != nullptr)
+            {
+                temp = temp->next;
+            }
+            temp->next = newItem;
+        }
+        cout << "Added to end: " << name << " - $" << price << endl;
+    }
+
+    void insertAfter(string target, string name, double price)
+    {
+        Item *temp = head;
+        while (temp != nullptr)
+        {
+            if (temp->name == target)
+            {
+                Item *newItem = new Item(name, price);
+                newItem->next = temp->next;
+                temp->next = newItem;
+                cout << "Inserted after " << target << ": " << name << " - $" << price << endl;
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "Item '" << target << "' not found in cart." << endl;
+    }
+
+    void searchItem(string name)
+    {
+        Item *temp = head;
+        while (temp != nullptr)
+        {
+            if (temp->name == name)
+            {
+                cout << "Item found: " << name << " - $" << temp->price << endl;
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "Item '" << name << "' not found in cart." << endl;
+    }
+
+    void displayCart()
+    {
+        if (head == nullptr)
+        {
+            cout << "Cart is empty." << endl;
+            return;
+        }
+
+        cout << "\nShopping Cart Contents:" << endl;
+        cout << "=======================" << endl;
+        Item *temp = head;
+        int itemCount = 1;
+        double total = 0;
+
+        while (temp != nullptr)
+        {
+            cout << itemCount << ". " << temp->name << " - $" << temp->price << endl;
+            total += temp->price;
+            temp = temp->next;
+            itemCount++;
+        }
+
+        cout << "=======================" << endl;
+        cout << "Total: $" << total << endl;
+        cout << "Items: " << itemCount - 1 << endl;
+    }
+
+    void initializeCart()
+    {
+        addToEnd("Laptop", 1000);
+        addToEnd("Phone", 700);
+        addToEnd("Tablet", 400);
+        addToEnd("Headphones", 150);
+    }
+
+    ~ShoppingCart()
+    {
+        Item *temp = head;
+        while (temp != nullptr)
+        {
+            Item *toDelete = temp;
+            temp = temp->next;
+            delete toDelete;
+        }
+    }
+};
+
+int main()
+{
+    ShoppingCart cart;
+
+    cout << "Initializing shopping cart..." << endl;
+    cart.initializeCart();
+
+    cout << "\nPerforming operations..." << endl;
+    cart.addToFront("Smartwatch", 200);
+    cart.addToEnd("Keyboard", 80);
+    cart.insertAfter("Phone", "Monitor", 300);
+
+    cout << "\nSearching for items..." << endl;
+    cart.searchItem("Tablet");
+    cart.searchItem("Camera");
+
+    cout << "\nFinal shopping cart:" << endl;
+    cart.displayCart();
+
+    return 0;
+}
