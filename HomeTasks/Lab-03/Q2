@@ -1,0 +1,181 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+struct Item
+{
+    string name;
+    double price;
+    Item *next;
+
+    Item(string n, double p) : name(n), price(p), next(nullptr) {}
+};
+
+class ShoppingCart
+{
+private:
+    Item *head;
+    Item *tail;
+    int size;
+
+public:
+    ShoppingCart() : head(nullptr), tail(nullptr), size(0) {}
+
+    void addToTail(string name, double price)
+    {
+        Item *newItem = new Item(name, price);
+        if (head == nullptr)
+        {
+            head = newItem;
+            tail = newItem;
+        }
+        else
+        {
+            tail->next = newItem;
+            tail = newItem;
+        }
+        size++;
+        cout << "Added to cart: " << name << " - $" << price << endl;
+    }
+
+    void deleteFromFront()
+    {
+        if (head == nullptr)
+        {
+            cout << "Cart is empty. Nothing to delete." << endl;
+            return;
+        }
+
+        Item *temp = head;
+        string deletedName = head->name;
+        double deletedPrice = head->price;
+
+        if (head == tail)
+        {
+            head = nullptr;
+            tail = nullptr;
+        }
+        else
+        {
+            head = head->next;
+        }
+
+        delete temp;
+        size--;
+        cout << "Removed from cart: " << deletedName << " - $" << deletedPrice << endl;
+    }
+
+    void searchByName(string name)
+    {
+        Item *temp = head;
+        int position = 1;
+        bool found = false;
+
+        while (temp != nullptr)
+        {
+            if (temp->name == name)
+            {
+                cout << "Item found at position " << position << ": " << temp->name << " - $" << temp->price << endl;
+                found = true;
+                break;
+            }
+            temp = temp->next;
+            position++;
+        }
+
+        if (!found)
+        {
+            cout << "Item '" << name << "' not found in cart." << endl;
+        }
+    }
+
+    void searchByPosition(int position)
+    {
+        if (position < 1 || position > size)
+        {
+            cout << "Invalid position. Please enter a position between 1 and " << size << "." << endl;
+            return;
+        }
+
+        Item *temp = head;
+        for (int i = 1; i < position; i++)
+        {
+            temp = temp->next;
+        }
+
+        cout << "Item at position " << position << ": " << temp->name << " - $" << temp->price << endl;
+    }
+
+    void displayCart()
+    {
+        if (head == nullptr)
+        {
+            cout << "Cart is empty." << endl;
+            return;
+        }
+
+        cout << "\nShopping Cart Contents (" << size << " items):" << endl;
+        cout << "================================" << endl;
+        Item *temp = head;
+        int itemCount = 1;
+        double total = 0;
+
+        while (temp != nullptr)
+        {
+            cout << itemCount << ". " << temp->name << " - $" << temp->price << endl;
+            total += temp->price;
+            temp = temp->next;
+            itemCount++;
+        }
+
+        cout << "================================" << endl;
+        cout << "Total: $" << total << endl;
+    }
+
+    void initializeCart()
+    {
+        addToTail("Laptop", 1000);
+        addToTail("Phone", 700);
+        addToTail("Tablet", 400);
+        addToTail("Headphones", 150);
+    }
+
+    ~ShoppingCart()
+    {
+        while (head != nullptr)
+        {
+            deleteFromFront();
+        }
+    }
+};
+
+int main()
+{
+    ShoppingCart cart;
+
+    cout << "Initializing shopping cart..." << endl;
+    cart.initializeCart();
+
+    cout << "\nPerforming operations..." << endl;
+    cart.addToTail("Smartwatch", 200);
+    cart.addToTail("Keyboard", 80);
+
+    cout << "\nCurrent cart:" << endl;
+    cart.displayCart();
+
+    cout << "\nDeleting from front..." << endl;
+    cart.deleteFromFront();
+
+    cout << "\nSearching for items..." << endl;
+    cart.searchByName("Tablet");
+    cart.searchByName("Camera");
+
+    cout << "\nSearching by position..." << endl;
+    cart.searchByPosition(2);
+    cart.searchByPosition(5);
+
+    cout << "\nFinal cart:" << endl;
+    cart.displayCart();
+
+    return 0;
+}
