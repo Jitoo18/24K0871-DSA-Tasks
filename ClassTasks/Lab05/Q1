@@ -1,0 +1,48 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+using namespace std;
+
+bool takeTurn(int target, int player) {
+    int guess;
+    cout << "Player " << player << ", enter your guess (1-100): ";
+    cin >> guess;
+    
+    if (guess == target) {
+        cout << "Player " << player << " wins! Correct number was " << target << endl;
+        return true;
+    }
+    else if (guess < target) {
+        cout << "Too low! ";
+    }
+    else {
+        cout << "Too high! ";
+    }
+    
+    return false;
+}
+
+void playGame(int target, int currentPlayer, int totalPlayers) {
+    bool gameWon = takeTurn(target, currentPlayer);
+    
+    if (!gameWon) {
+        int nextPlayer = (currentPlayer % totalPlayers) + 1;
+        cout << "Turn passes to Player " << nextPlayer << endl;
+        playGame(target, nextPlayer, totalPlayers);
+    }
+}
+
+int main() {
+    srand(time(0));
+    int target = rand() % 100 + 1;
+    int totalPlayers;
+    
+    cout << "Welcome to the Number Guessing Game!" << endl;
+    cout << "How many players? ";
+    cin >> totalPlayers;
+    
+    cout << "I'm thinking of a number between 1 and 100." << endl;
+    playGame(target, 1, totalPlayers);
+    
+    return 0;
+}
